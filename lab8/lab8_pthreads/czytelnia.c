@@ -17,8 +17,10 @@ int my_read_lock_lock(czytelnia_t* czytelnia_p){
     czytelnia_p -> empty_czytelnicy--;
   }
 
-  pthread_cond_signal(&czytelnia_p -> czytelnik);
   czytelnia_p -> liczba_czytelnikow++;
+
+  pthread_cond_signal(&czytelnia_p -> czytelnik);
+
   pthread_mutex_unlock(&czytelnia_p -> mutex);
 }
 
