@@ -3,7 +3,7 @@
 #include <math.h>
 #include <omp.h>
 
-#define WYMIAR 18
+#define WYMIAR 14
 
 
 int main ()
@@ -24,7 +24,7 @@ int main ()
   // pÄtla do modyfikacji - docelowo rĂłwnolegĹa w OpenMP
   double suma_parallel=0.0;
   // ...
-  #pragma omp parallel for ordered schedule(dynamic) default(none) shared(suma_parallel, a) num_threads(4)
+  #pragma omp parallel for ordered schedule(static) default(none) shared(suma_parallel, a) num_threads(4)
   for(int i=0;i<WYMIAR;i++) {
     int id_w = omp_get_thread_num();
 
