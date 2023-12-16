@@ -27,18 +27,18 @@ int main(){
   printf("\te_atomic \t= %d\n", e_atomic);
     
   
-#pragma omp parallel default(none) shared(a_shared, e_atomic) private(b_private) firstprivate(c_firstprivate )
+#pragma omp parallel default(none) shared(a_shared, e_atomic) private(b_private) firstprivate(c_firstprivate)
   {
     thread_private = omp_get_thread_num();
     
     int i;
     int d_local_private;
-    d_local_private = a_shared + c_firstprivate;
+    d_local_private = a_shared + c_firstprivate; // WAR d-36-41
     
     #pragma omp barrier
     #pragma omp critical
     for(i=0;i<10;i++){
-      a_shared++; 
+      a_shared++; // WAW a-41-41, WAR a-41-41, RAW a-41-41
     }
 
     for(i=0;i<10;i++){
@@ -47,15 +47,17 @@ int main(){
 
     for(i=0;i<10;i++){
       #pragma omp atomic
-      e_atomic+=omp_get_thread_num();
+      e_atomic+=omp_get_thread_num(); // WAR e-50-50
     }
-    
+
+    #pragma omp barrier
+    #pragma omp critical
     {
-      
+    
       printf("\nw obszarze równoległym: aktualna liczba watkow %d, moj ID %d\n",
 	     omp_get_num_threads(), omp_get_thread_num());
       
-      printf("\ta_shared \t= %d\n", a_shared);
+      printf("\ta_shared \t= %d\n", a_shared); // RAW a-60-41
       printf("\tb_private \t= %d\n", b_private);
       printf("\tc_firstprivate \t= %d\n", c_firstprivate);
       printf("\td_local_private = %d\n", d_local_private);
